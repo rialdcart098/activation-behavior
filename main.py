@@ -15,6 +15,19 @@ transform = v2.Compose([
     v2.ToDtype(torch.float32, scale=True),
     v2.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
+def gradient_heatmap(grad_flows, activation, layers):
+    matrix = np.mean(grad_flows, axis=0)
+
+    plt.figure(figsize=(12, 6))
+    im = plt.imshow(matrix, cmap='viridis', aspect='auto')
+    plt.colorbar(im, label='Gradient L2 Norm')
+    plt.yticks(ticks=range(len(layers)), labels=layers)
+    plt.xlabel('Epoch')
+    plt.ylabel('Layer')
+    plt.title(f'Gradient Flow Heatmap for {activation}')
+
+    plt.show()
+
 def main():
 
     train_set = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
@@ -47,27 +60,26 @@ def main():
         'LeakyReLU': [],
         'GELU': []
     }
+    avg_grad_flows = {
+        'ReLU': [],
+        'LeakyReLU': [],
+        'GELU': []
+    }
     for seed in range(1, 6):
         print(f'########## TRIAL {seed} ##########')
         torch.manual_seed(seed)
         np.random.seed(seed)
         random.seed(seed)
 
-        results = {}
-
         for name, activation in activations.items():
             print(f'--- Training {name} model ---')
             model = CNN(activation)
-            train_loss, test_loss, acc = train(model, train_loader, test_loader, device)
-            results[name] = {
-                'train_loss': train_loss,
-                'test_loss': test_loss,
-                'accuracy': acc
-            }
+            test_loss, acc, grad_flows = train(model, train_loader, test_loader, device)
             final_test_loss[name].append(test_loss[-1])
             final_accuracy[name].append(acc[-1])
             avg_loss_curve[name].append(test_loss)
             avg_accuracy_curve[name].append(acc)
+            avg_grad_flows[name].append(grad_flows)
 
     print("########################## Final Results ##########################\n\n")
     for name in activations:
@@ -97,10 +109,18 @@ def main():
     plt.tight_layout()
     plt.show()
 
-    plt.figure(figsize=(8,5))
-    for name in activations.keys():
-        arr = np.array(avg_accuracy_curve[name])
+    plt.figure(figsize=(8, 5))
+    for name in activations:
+        grad_trial = []
+        for trial in avg_grad_flows[name]:
+            layers = list(trial.keys())
+            grad_flows = np.array([trial[layer] for layer in layers])
+            grad_trial.append(grad_flows)
+        avg_grad_flows[name] = np.array(grad_trial)
+        gradient_heatmap(avg_grad_flows[name], name, layers)
 
+    for name in activations:
+        arr = np.array(avg_accuracy_curve[name])
         mean_curve = np.mean(arr, axis=0)
         std_curve = np.std(arr, axis=0)
 
@@ -119,7 +139,7 @@ def main():
     plt.tight_layout()
     plt.show()
 
-    plt.figure(figsize=(8,5))
+    plt.figure(figsize=(8, 5))
     for name in activations.keys():
         arr = np.array(avg_loss_curve[name])
 
