@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+
 def train(model, train_loader, test_loader, device, epochs=15):
     model.to(device)
     optimizer = torch.optim.SGD(model.parameters(), lr=0.01, momentum=0.9)

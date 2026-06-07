@@ -35,36 +35,19 @@ def main():
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=32, shuffle=True, num_workers=2)
     test_loader = torch.utils.data.DataLoader(test_set, batch_size=32, shuffle=False, num_workers=2)
 
-    final_test_loss = {
-        'ReLU': [],
-        'LeakyReLU': [],
-        'GELU': []
-    }
-    final_accuracy = {
-        'ReLU': [],
-        'LeakyReLU': [],
-        'GELU': []
-    }
+    
     activations = {
         'ReLU': nn.ReLU(),
         'LeakyReLU': nn.LeakyReLU(),
-        'GELU': nn.GELU()
+        'GELU': nn.GELU(),
+        'Tanh': nn.Tanh()
     }
-    avg_accuracy_curve = {
-        'ReLU': [],
-        'LeakyReLU': [],
-        'GELU': []
-    }
-    avg_loss_curve = {
-        'ReLU': [],
-        'LeakyReLU': [],
-        'GELU': []
-    }
-    avg_grad_flows = {
-        'ReLU': [],
-        'LeakyReLU': [],
-        'GELU': []
-    }
+    final_test_loss = {activation: [] for activation in activations}
+    final_accuracy = {activation: [] for activation in activations}
+    avg_accuracy_curve = {activation: [] for activation in activations}
+    avg_loss_curve = {activation: [] for activation in activations}
+    avg_grad_flows = {activation: [] for activation in activations}
+    
     for seed in range(1, 6):
         print(f'########## TRIAL {seed} ##########')
         torch.manual_seed(seed)
@@ -92,7 +75,7 @@ def main():
 
     plt.style.use("seaborn-v0_8-darkgrid")
     plt.figure(figsize=(8, 5))
-    plt.bar(list(activations.keys()), accuracy_means, yerr=accuracy_stds, capsize=5, color=['blue', 'orange', 'green'])
+    plt.bar(list(activations.keys()), accuracy_means, yerr=accuracy_stds, capsize=5)
     plt.ylabel("Mean Accuracy")
     plt.title("Mean Accuracy with Standard Deviations (5 Trials)")
     plt.ylim(0, 1)
@@ -102,7 +85,7 @@ def main():
 
     plt.style.use("seaborn-v0_8-darkgrid")
     plt.figure(figsize=(8, 5))
-    plt.bar(list(activations.keys()), test_loss_means, yerr=test_loss_stds, capsize=5, color=['blue', 'orange', 'green'])
+    plt.bar(list(activations.keys()), test_loss_means, yerr=test_loss_stds, capsize=5)
     plt.ylabel("Mean Test Loss")
     plt.title("Mean Test Loss with Standard Deviations (5 Trials)")
     plt.grid(axis='y', linestyle='--', alpha=0.7)
