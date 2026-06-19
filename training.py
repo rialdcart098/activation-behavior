@@ -25,8 +25,7 @@ def train(model, train_loader, test_loader, device, epochs=15):
 
             for name, param in model.named_parameters():
                 if 'weight' in name and param.grad is not None:
-                    epoch_grads[name].append(param.grad.norm().item())
-
+                    grad_flows[name].append(param.grad.norm().item())
             optimizer.step()
             running_loss += loss.item()
         train_loss = running_loss / len(train_loader)
@@ -34,8 +33,6 @@ def train(model, train_loader, test_loader, device, epochs=15):
         test_loss, accuracy = evaluate(model, test_loader, device)
         test_losses.append(test_loss)
         test_accuracies.append(accuracy)
-        for name in grad_flows:
-            grad_flows[name].append(torch.mean(torch.tensor(epoch_grads[name])).item())
 
         print(f"Epoch {epoch+1}/{epochs} | Train Loss: {train_loss:.4f} | Test Loss: {test_loss:.4f} | Acc: {accuracy:.4f}")
     return test_losses, test_accuracies, grad_flows
