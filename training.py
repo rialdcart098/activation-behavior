@@ -14,7 +14,6 @@ def train(model, train_loader, test_loader, device, epochs=15):
 
     for epoch in range(epochs):
         model.train()
-        epoch_grads = {name: [] for name in grad_flows}
         running_loss = 0.0
         for images, labels in train_loader:
             images, labels = images.to(device), labels.to(device)
