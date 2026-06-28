@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-import matplotlib.pyplot as plt
 
 
 def train(model, train_loader, test_loader, device, epochs=15):

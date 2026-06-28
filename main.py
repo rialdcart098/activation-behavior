@@ -59,7 +59,7 @@ def sparsity_curve(activations, avg_sparsity_curve):
         plt.legend()
         plt.grid(alpha=0.3)
         plt.tight_layout()
-        plt.savefig(f'{name}_sparsity_curve.pdf', bbox_inches='tight')
+        plt.savefig(f'figures/{name}_sparsity_curve.pdf', bbox_inches='tight')
 
 
 def plot_curves(activations, avg_accuracy_curve, avg_loss_curve):
@@ -102,7 +102,7 @@ def plot_curves(activations, avg_accuracy_curve, avg_loss_curve):
     ax[1].grid(alpha=0.3)
     plt.tight_layout()
     plt.show()
-    fig.savefig('accuracy_loss_curves.pdf', bbox_inches='tight')
+    fig.savefig('figures/accuracy_loss_curves.pdf', bbox_inches='tight')
 
 def plot_distributions(model, loader, device):
     fig, ax = plt.subplots(1, 2, figsize=(20, 4))
@@ -137,7 +137,7 @@ def plot_distributions(model, loader, device):
         legends.append(name)
     ax[1].legend(legends)
     ax[1].set_title(f"Activation distributions - {activation_name}")
-    fig.savefig(f'{activation_name}_distributions.pdf', bbox_inches='tight')
+    fig.savefig(f'figures/{activation_name}_distributions.pdf', bbox_inches='tight')
 
 def main():
     experiment_mode = False
@@ -195,7 +195,7 @@ def main():
         avg_grad_flows[name] = np.array(grad_trial)
         plot_gradient_steps(ax[i], avg_grad_flows[name], name, layers)
     fig.tight_layout()
-    fig.savefig('gradient_curves.pdf', bbox_inches='tight')
+    fig.savefig('figures/gradient_curves.pdf', bbox_inches='tight')
     plt.show()
     plot_curves(activations, avg_accuracy_curve, avg_loss_curve)
     sparsity_curve(activations, avg_sparsity_curve)

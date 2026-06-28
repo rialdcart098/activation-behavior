@@ -222,3 +222,6 @@ data/
 *.tar.gz
 *.pt
 *.pth
+
+# JetBrains
+.idea/
