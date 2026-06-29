@@ -41,7 +41,7 @@ def train(model, train_loader, test_loader, device, epochs=15):
 # trials x epochs x layers (avg over trials)
 def sparsity(model):
     activation = model.activation.__class__.__name__
-    sparsities = [(out.detach().cpu() < 0.01).float().mean().item() for out in model.saved.values()] if activation == 'ReLU' else [(out.detach().cpu().abs() > 0.97).float().mean().item() for out in model.saved.values()]
+    sparsities = [(out.detach().cpu() < 0.01).float().mean().item() for out in model.saved.values()] if activation == 'ReLU' else [(1 - out.detach().cpu().abs()**2 < 0.001).float().mean().item() for out in model.saved.values()]
     return sparsities
 
 def evaluate(model, data_loader, device):
