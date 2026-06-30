@@ -15,4 +15,7 @@ This project investigates if classic activation limitations, such as saturation 
   - Gradient RMS across layers over steps (batch size * epochs)
   - Loss & Accuracy Curves over epochs
 ### Discussion:
-- 
+- ReLU's sparsity still persists, with over deeper layers creeping up to 90% sparsity rate
+- ReLU overfits much quicker than Tanh under identical conditions
+- Tanh saturation is less of a problem, with loss decreasing steadily, and activation distributions remaining well spread
+- With 80-90% of ReLU activations being zero in deeper layers, the activation distribution heavily spiking at 0, and overfitting on epoch 3 as opposed to normal training behavior in tanh, it is clear that the Dying ReLU problem is still a significant issue in modern CNNs.
